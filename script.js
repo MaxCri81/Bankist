@@ -59,65 +59,45 @@ const inputLoanAmount = document.querySelector('.form__input--loan-amount');
 const inputCloseUsername = document.querySelector('.form__input--user');
 const inputClosePin = document.querySelector('.form__input--pin');
 
-// LECTURES
+function displayMovements(movements) {
+  // Clear all movement elements
+  containerMovements.innerHTML = "";
+  movements.forEach(createMovementElement);
+  
+  function createMovementElementOld(value, index) {
+    // If the value is positive style and write deposit otherwise withdrawal
+    const movementType = value > 0 ? "deposit" : "withdrawal";
+    const htmlElement = `
+        <div class="movements__row">
+          <div class="movements__type movements__type--${movementType}">${index + 1} ${movementType}</div>
+          <div class="movements__value">${value}</div>
+        </div>
+    `;
+    containerMovements.insertAdjacentHTML("afterbegin", htmlElement);
+  }
 
-const currencies = new Map([
-  ['USD', 'United States dollar'],
-  ['EUR', 'Euro'],
-  ['GBP', 'Pound sterling'],
-]);
+  function createMovementElement(value, index) {
+    // If the value is positive style and write deposit otherwise withdrawal
+    const movementType = value > 0 ? "deposit" : "withdrawal";
 
-const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
-/******************************************************************************* Array methods *************************************************************************/
-/*
-// Methods that do NOT mutate the original array
-let arr = ["a", "b", "c", "d", "e"];
-console.log(arr.slice(2));
-console.log(arr.slice(2, 4)); // delete from index 2 to 4 (excluded)
-console.log(arr.slice()); // create an array copy
-console.log([...arr]); // create an array copy
-console.log(arr.slice(-1));
+    const row = document.createElement('div');
+    row.className = 'movements__row';
+    containerMovements.append(row);
 
-arr = ["a", "b", "c", "d", "e"];
-const arr2 = ["l", "i", "h", "g", "f"];
-console.log(arr2.reverse());
-console.log(arr2);
-console.log(arr.concat(arr2));
-console.log([...arr, ...arr2]);
+    const movementsType = document.createElement('div');
+    movementsType.classList.add('movements__type', `movements__type--${movementType}`);
+    let text = document.createTextNode(index + 1 + " " + movementType);
+    movementsType.appendChild(text);
+    row.append(movementsType);
 
-console.log([...arr, ...arr2].join(" - "));
+    const movementsValue = document.createElement('div');
+    movementsValue.className = 'movements__value';
+    text = document.createTextNode(value);
+    movementsValue.appendChild(text);
+    row.append(movementsValue);
+  }
+};
+displayMovements(account1.movements);
 
-// Array mutating methods
-console.log(arr.splice(-1));
-console.log(arr.splice(1, 2)); // delete 2 elemtents from the array starting from index 1
-console.log(arr);
 
-const arrNew = [23, 11, 64];
-console.log(arrNew[0]);
-console.log(arrNew.at(0));
 
-console.log(arrNew[arrNew.length - 1]); // last element in the traditional way
-console.log(arrNew.slice(-1)[0]); // last element with the slice method
-console.log(arrNew.at(-1)); // last element with the 'at' method
-
-console.log("Massimo".at(0));
-console.log("Massimo".at(-1));
-*/
-/****************************************************************************** forEach ******************************************************************************/
-/*
-// For method
-// for (const movement of movements) {
-//   console.log((`You ${movement > 0 ? "deposited" : "witdrew"} ${Math.abs(movement)}`));
-// };
-
-// forEach method
-movements.forEach( (movement) => console.log((`You ${movement > 0 ? "deposited" : "witdrew"} ${Math.abs(movement)}`)));
-
-// The forEach method can returns the value, index and the array, if they are specified as parameters inside the function
-// You cannot break the forEach loop iteration, the for method on the contrary can be broken. 
-movements.forEach( (movement, index, array) => console.log(movement, index, array));
-
-currencies.forEach((value, key, map)=> console.log(key, value));
-const currenciesUnique = new Set(['USD', 'GBP', 'USD', 'EUR']);
-currenciesUnique.forEach( (value) => console.log(value)); // in sets keys and values are the same (there are no keys, only values)
-*/
