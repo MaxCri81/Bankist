@@ -67,7 +67,7 @@ const inputClosePin = document.querySelector('.form__input--pin');
 function displayMovements(movements) {
   // Clear all movement elements
   containerMovements.innerHTML = "";
-  movements.forEach(createMovementElement);
+  movements.forEach(createMovementElementSafe);
   
   /**
    * Create an HTML element dynamically from a forEach call back.
@@ -76,7 +76,7 @@ function displayMovements(movements) {
    * @param {number} value - forEach array value iteration
    * @param {number} index - forEach array index iteration
    */
-  function createMovementElementOld(value, index) {
+  function createMovementElement(value, index) {
     // If the value is positive style and write deposit, otherwise withdrawal
     const movementType = value > 0 ? "deposit" : "withdrawal";
     const htmlElement = `
@@ -94,7 +94,7 @@ function displayMovements(movements) {
    * @param {number} value - forEach array value iteration
    * @param {number} index - forEach array index iteration
    */
-  function createMovementElement(value, index) {
+  function createMovementElementSafe(value, index) {
     // If the value is positive style and write deposit, otherwise withdrawal
     const movementType = value > 0 ? "deposit" : "withdrawal";
 
