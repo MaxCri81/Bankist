@@ -111,7 +111,7 @@ function displayMovements(movements) {
 
     const movementsValue = document.createElement('div');
     movementsValue.className = 'movements__value';
-    text = document.createTextNode(value);
+    text = document.createTextNode(value + "€");
     movementsValue.appendChild(text);
     row.append(movementsValue);
 
@@ -137,11 +137,26 @@ createUsername(accounts);
  * @param {Array} movements - array of numbers (user movements) to be summed
  */
 function calcPrintBalance(movements) {
-  labelBalance.textContent = `${movements.reduce((sum, value) => sum + value)} EUR`;
+  labelBalance.textContent = `${movements.reduce((sum, value) => sum + value)}€`;
 };
-calcPrintBalance(account1.movements)
+calcPrintBalance(account1.movements);
 
+/**
+ * Print the sum of the deposits, withdrawal and total interests of 1.2% 
+ * applied on every deposit transaction. Transactions must be greater 
+ * or equal to 1€. Show the pipeline results in the app.
+ * @param {Array} movements - array of numbers (user movements) to work with.
+ */
+function calcPrintDisplaySummary(movements) {
+  // Sum of all the deposits (positive values)
+  labelSumIn.textContent = `${movements.filter(value => value > 0).reduce((sum, value) => sum + value)}€`;
+  // Sum of all the withdrawal (negative values)
+  labelSumOut.textContent = `${Math.abs(movements.filter(value => value < 0).reduce((sum, value) => sum + value))}€`;
+  // Sum of the interests of 1.2% applied on every deposit transaction, where the transaction is greater or equal to 1€.
+  labelSumInterest.textContent = `${Math.abs(movements.filter(value => value > 0).map(value => value * 1.2 / 100).filter(value => value >= 1).reduce((sum, value) => sum + value))}€`;
 
+};
+calcPrintDisplaySummary(account1.movements);
 
 
 
