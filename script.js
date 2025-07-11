@@ -131,8 +131,15 @@ function createUsername(accountArray) {
   });
 };
 createUsername(accounts);
-console.log(accounts);
 
+/**
+ * Print the user movements total and display on the app. 
+ * @param {Array} movements - array of numbers (user movements) to be summed
+ */
+function calcPrintBalance(movements) {
+  labelBalance.textContent = `${movements.reduce((sum, value) => sum + value)} EUR`;
+};
+calcPrintBalance(account1.movements)
 
 
 
