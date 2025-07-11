@@ -119,5 +119,23 @@ function displayMovements(movements) {
 };
 displayMovements(account1.movements);
 
+/**
+ * For each account object in accountArray create the userName property with
+ * the first letters of the owner property in lower case.
+ * e.g Steven Thomas Williams => stw
+ * @param {Array} accountArray - accounts array to be looped through
+ */
+function createUsername(accountArray) {
+  accountArray.forEach(function(account){
+    account.userName = account.owner.toLowerCase().split(" ").map(value => value[0]).join("");
+  });
+};
+createUsername(accounts);
+console.log(accounts);
+
+
+
+
+
 
 
