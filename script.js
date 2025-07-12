@@ -32,6 +32,7 @@ const account4 = {
 };
 
 const accounts = [account1, account2, account3, account4];
+let currentAccount;
 
 // Elements
 const labelWelcome = document.querySelector('.welcome');
@@ -58,6 +59,9 @@ const inputTransferAmount = document.querySelector('.form__input--amount');
 const inputLoanAmount = document.querySelector('.form__input--loan-amount');
 const inputCloseUsername = document.querySelector('.form__input--user');
 const inputClosePin = document.querySelector('.form__input--pin');
+
+// Event handler
+btnLogin.addEventListener("click", login);
 
 /**
  * Clear the container of any HTML elements and forEach value in
@@ -117,7 +121,6 @@ function displayMovements(movements) {
 
   }
 };
-displayMovements(account1.movements);
 
 /**
  * For each account object in accountArray create the userName property with
@@ -127,7 +130,7 @@ displayMovements(account1.movements);
  */
 function createUsername(accountArray) {
   accountArray.forEach(function(account){
-    account.userName = account.owner.toLowerCase().split(" ").map(value => value[0]).join("");
+    account.username = account.owner.toLowerCase().split(" ").map(value => value[0]).join("");
   });
 };
 createUsername(accounts);
@@ -139,24 +142,52 @@ createUsername(accounts);
 function calcPrintBalance(movements) {
   labelBalance.textContent = `${movements.reduce((sum, value) => sum + value)}€`;
 };
-calcPrintBalance(account1.movements);
 
 /**
  * Print the sum of the deposits, withdrawal and total interests of 1.2% 
  * applied on every deposit transaction. Transactions must be greater 
  * or equal to 1€. Show the pipeline results in the app.
- * @param {Array} movements - array of numbers (user movements) to work with.
+ * @param {Object} account - account object to work with.
  */
-function calcPrintDisplaySummary(movements) {
+function calcPrintDisplaySummary(account) {
   // Sum of all the deposits (positive values)
-  labelSumIn.textContent = `${movements.filter(value => value > 0).reduce((sum, value) => sum + value)}€`;
+  labelSumIn.textContent = `${account.movements.filter(value => value > 0).reduce((sum, value) => sum + value)}€`; // to fix the reduce if array is empty
   // Sum of all the withdrawal (negative values)
-  labelSumOut.textContent = `${Math.abs(movements.filter(value => value < 0).reduce((sum, value) => sum + value))}€`;
+  labelSumOut.textContent = `${Math.abs(account.movements.filter(value => value < 0).reduce((sum, value) => sum + value))}€`; // to fix the reduce if array is empty
   // Sum of the interests of 1.2% applied on every deposit transaction, where the transaction is greater or equal to 1€.
-  labelSumInterest.textContent = `${Math.abs(movements.filter(value => value > 0).map(value => value * 1.2 / 100).filter(value => value >= 1).reduce((sum, value) => sum + value))}€`;
+  labelSumInterest.textContent = `${Math.abs(account.movements.filter(value => value > 0).map(value => value * account.interestRate / 100).filter(value => value >= 1).reduce((sum, value) => sum + value))}€`; // to fix the reduce if array is empty
 
 };
-calcPrintDisplaySummary(account1.movements);
+
+/**
+ * Compare username and pin with the accounts properties.
+ * Display UI, message, movements, balance and summary related to the user credentials.
+ * @param {Object} event - PointerEvent returned from btnLogin event listener
+ */
+function login(event) {
+  console.log(event, typeof event);
+  // Prevent the form default behaviour, when submitting it, for refreshing the page
+  event.preventDefault();
+  // compare the username typed in the page with the usename property in accounts
+  currentAccount = accounts.find(account => account.username === inputLoginUsername.value);
+
+  // Check that the inserted PIN is equal to the pin property value
+  if (currentAccount?.pin === Number(inputLoginPin.value)) {
+    // Clear input fields
+    inputLoginUsername.value = inputLoginPin.value = "";
+    // Lose the focus from the pin input field
+    inputLoginPin.blur();
+    // Display UI and message
+    labelWelcome.textContent = `Welcome back, ${currentAccount.owner.split(" ")[0]}`;
+    containerApp.style.opacity = 1;
+    // Display movements
+    displayMovements(currentAccount.movements);
+    // Display balance
+    calcPrintBalance(currentAccount.movements);
+    // Display summary
+    calcPrintDisplaySummary(currentAccount);
+  };
+}
 
 
 
