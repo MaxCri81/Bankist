@@ -62,6 +62,7 @@ const inputClosePin = document.querySelector('.form__input--pin');
 
 // Event handler
 btnLogin.addEventListener("click", login);
+btnTransfer.addEventListener("click", transfer);
 
 /**
  * Clear the container of any HTML elements and forEach value in
@@ -136,11 +137,13 @@ function createUsername(accountArray) {
 createUsername(accounts);
 
 /**
- * Print the user movements total and display on the app. 
+ * Print the user movements total and display in the app.
+ * Create a balance property with the total, in the object.
  * @param {Array} movements - array of numbers (user movements) to be summed
  */
-function calcPrintBalance(movements) {
-  labelBalance.textContent = `${movements.reduce((sum, value) => sum + value)}€`;
+function calcPrintBalance(account) {
+  account.balance = account.movements.reduce((sum, value) => sum + value, 0);
+  labelBalance.textContent = `${account.balance}€`;
 };
 
 /**
@@ -165,7 +168,6 @@ function calcPrintDisplaySummary(account) {
  * @param {Object} event - PointerEvent returned from btnLogin event listener
  */
 function login(event) {
-  console.log(event, typeof event);
   // Prevent the form default behaviour, when submitting it, for refreshing the page
   event.preventDefault();
   // compare the username typed in the page with the usename property in accounts
@@ -180,14 +182,45 @@ function login(event) {
     // Display UI and message
     labelWelcome.textContent = `Welcome back, ${currentAccount.owner.split(" ")[0]}`;
     containerApp.style.opacity = 1;
-    // Display movements
-    displayMovements(currentAccount.movements);
-    // Display balance
-    calcPrintBalance(currentAccount.movements);
-    // Display summary
-    calcPrintDisplaySummary(currentAccount);
+    updateData();
   };
-}
+};
+
+/**
+ * Trasfer money from an account to another one.
+ * @param {Object} event - PointerEvent returned from btnTransfer event listener
+ */
+function transfer(event) {
+  // Prevent the form default behaviour, when submitting it, for refreshing the page
+  event.preventDefault();
+  const amount = Number(inputTransferAmount.value);
+  // Look for an account with username = inputTransferTo.value
+  const receiverAccount = accounts.find(account => account.username === inputTransferTo.value);
+  // if the receiverAccount exist, the amount > 0, there are enough money in the balance 
+  // to make the trasfer and the current username is different from the receiverAccount username
+  if (amount && currentAccount.balance >= amount && currentAccount.username !== receiverAccount?.username && receiverAccount) {
+    // subtract the money from the current account
+    currentAccount.movements.push(-amount);
+    // add the money to the receiver account
+    receiverAccount.movements.push(amount);
+    // update UI
+    updateData();
+  }
+  // clear the input fields
+  inputTransferAmount.value = inputTransferTo.value = "";
+};
+
+/** Update UI movements, balance and summary related to the user credentials. */
+function updateData() {
+  // Display movements
+  displayMovements(currentAccount.movements);
+  // Display balance
+  calcPrintBalance(currentAccount);
+  // Display summary
+  calcPrintDisplaySummary(currentAccount);
+};
+
+
 
 
 
