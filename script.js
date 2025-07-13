@@ -63,6 +63,7 @@ const inputClosePin = document.querySelector('.form__input--pin');
 // Event handler
 btnLogin.addEventListener("click", login);
 btnTransfer.addEventListener("click", transfer);
+btnClose.addEventListener("click", closeAccount);
 
 /**
  * Clear the container of any HTML elements and forEach value in
@@ -209,6 +210,26 @@ function transfer(event) {
   // clear the input fields
   inputTransferAmount.value = inputTransferTo.value = "";
 };
+
+/**
+ * Close the current account and delete the object
+ * @param {Object} event - PointerEvent returned from btnClose event listener
+ */
+function closeAccount(event) {
+  // Prevent the form default behaviour, when submitting it, for refreshing the page
+  event.preventDefault();
+
+  if (currentAccount.username === inputCloseUsername.value && currentAccount.pin === Number(inputClosePin.value)) {
+    // Find the index for the account object with username equal to the current username
+    const index = accounts.findIndex(account => account.username === currentAccount.username);
+    // delete the object
+    accounts.splice(index, 1);
+    // Hide UI
+    containerApp.style.opacity = 0;
+  }
+  // Clear input fields
+  inputCloseUsername.value = inputClosePin.value = "";
+}
 
 /** Update UI movements, balance and summary related to the user credentials. */
 function updateData() {
