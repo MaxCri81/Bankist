@@ -64,6 +64,8 @@ const inputClosePin = document.querySelector('.form__input--pin');
 btnLogin.addEventListener("click", login);
 btnTransfer.addEventListener("click", transfer);
 btnClose.addEventListener("click", closeAccount);
+btnLoan.addEventListener("click", requestLoan);
+
 
 /**
  * Clear the container of any HTML elements and forEach value in
@@ -229,6 +231,24 @@ function closeAccount(event) {
   }
   // Clear input fields
   inputCloseUsername.value = inputClosePin.value = "";
+}
+
+/**
+ * Add a new deposit in the movements array for the current account.
+ * The amount must not be greater than 10% of the bigger deposit in the movements array
+ * @param {*} event - PointerEvent returned from btnLoan event listener
+ */
+function requestLoan(event) {
+  // Prevent the form default behaviour, when submitting it, for refreshing the page
+  event.preventDefault();
+  const amount = Number(inputLoanAmount.value);
+  // if any of the movement in the current account is greater or equal than the 10%
+  // of the requested amount, and the amount is greater than 0
+  if (amount > 0 && currentAccount.movements.some(movement => movement >= amount * 0.1)) {
+    currentAccount.movements.push(amount);
+    updateData();
+  }
+  inputLoanAmount.value = "";
 }
 
 /** Update UI movements, balance and summary related to the user credentials. */
