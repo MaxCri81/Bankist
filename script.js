@@ -60,22 +60,28 @@ const inputLoanAmount = document.querySelector('.form__input--loan-amount');
 const inputCloseUsername = document.querySelector('.form__input--user');
 const inputClosePin = document.querySelector('.form__input--pin');
 
+let sorted = false;
+
 // Event handler
 btnLogin.addEventListener("click", login);
 btnTransfer.addEventListener("click", transfer);
 btnClose.addEventListener("click", closeAccount);
 btnLoan.addEventListener("click", requestLoan);
-
+btnSort.addEventListener("click", sortMovements);
 
 /**
  * Clear the container of any HTML elements and forEach value in
  * movements, create a new element, accordingly.
  * @param {Array} movements - array of numbers (user movement figures)
+ * @param {boolean} sort - sorting or not the movements true / false, default false 
  */
-function displayMovements(movements) {
+function displayMovements(movements, sort = false) {
   // Clear all movement elements
   containerMovements.innerHTML = "";
-  movements.forEach(createMovementElementSafe);
+  // slice returns a new array so to avoid changing the original movements array, with the sort method.
+  const sortMovements = sort ? movements.slice().sort((a, b) => a - b) : movements;
+
+  sortMovements.forEach(createMovementElementSafe);
   
   /**
    * Create an HTML element dynamically from a forEach call back.
@@ -249,6 +255,17 @@ function requestLoan(event) {
     updateData();
   }
   inputLoanAmount.value = "";
+}
+
+/**
+ * Call back function from btnSort click event.
+ * Display the movements is ascending or descending order.
+ * It inverts the status of 'sorted' every time
+ * the button is clicked.
+ */
+function sortMovements() {
+  displayMovements(currentAccount.movements, !sorted);
+  sorted = !sorted;
 }
 
 /** Update UI movements, balance and summary related to the user credentials. */
