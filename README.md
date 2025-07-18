@@ -1,3 +1,8 @@
-The project comes from a Udemy course. JavaScript code written by Massimiliano Crisafulli.
+An example of a bank app showing how to perform transactions between different accounts.
 
-<img width="1852" height="865" alt="Screenshot 2025-07-12 175832" src="https://github.com/user-attachments/assets/0f2fe4f0-d62c-4e10-ad72-7960a45ad02d" />
+https://github.com/user-attachments/assets/f6625e27-7a91-421d-a15f-bb728bcff6c5
+
+The project comes from a Udemy course.
+
+JavaScript code written by Massimiliano Crisafulli.
+
