@@ -94,6 +94,8 @@ function displayMovements(movements, sort = false) {
   const sortMovements = sort ? movements.slice().sort((a, b) => a - b) : movements;
 
   sortMovements.forEach(createMovementElementSafe);
+  // Select every other element and set its background color to WhiteSmoke.
+  [...document.querySelectorAll(".movements__row")].forEach((row, index) => index % 2 === 0 ? row.style.backgroundColor = "WhiteSmoke" : null);
   
   /**
    * Create an HTML element dynamically from a forEach call back.
@@ -137,10 +139,9 @@ function displayMovements(movements, sort = false) {
 
     const movementsValue = document.createElement('div');
     movementsValue.className = 'movements__value';
-    text = document.createTextNode(value.toFixed(2) + "€");
+    text = document.createTextNode(value.toFixed(2) + "€"); //round to 2 decimal
     movementsValue.appendChild(text);
     row.append(movementsValue);
-
   }
 };
 
@@ -164,7 +165,7 @@ createUsername(accounts);
  */
 function calcPrintBalance(account) {
   account.balance = account.movements.reduce((sum, value) => sum + value, 0);
-  labelBalance.textContent = `${account.balance.toFixed(2)}€`;
+  labelBalance.textContent = `${account.balance.toFixed(2)}€`; //round to 2 decimal
 };
 
 /**
@@ -175,11 +176,11 @@ function calcPrintBalance(account) {
  */
 function calcPrintDisplaySummary(account) {
   // Sum of all the deposits (positive values)
-  labelSumIn.textContent = `${account.movements.filter(value => value > 0).reduce((sum, value) => sum + value).toFixed(2)}€`; // to fix the reduce if array is empty
+  labelSumIn.textContent = `${account.movements.filter(value => value > 0).reduce((sum, value) => sum + value).toFixed(2)}€`; //round to 2 decimal
   // Sum of all the withdrawal (negative values)
-  labelSumOut.textContent = `${Math.abs(account.movements.filter(value => value < 0).reduce((sum, value) => sum + value)).toFixed(2)}€`; // to fix the reduce if array is empty
+  labelSumOut.textContent = `${Math.abs(account.movements.filter(value => value < 0).reduce((sum, value) => sum + value)).toFixed(2)}€`; //round to 2 decimal
   // Sum of the interests of 1.2% applied on every deposit transaction, where the transaction is greater or equal to 1€.
-  labelSumInterest.textContent = `${Math.abs(account.movements.filter(value => value > 0).map(value => value * account.interestRate / 100).filter(value => value >= 1).reduce((sum, value) => sum + value)).toFixed(2)}€`; // to fix the reduce if array is empty
+  labelSumInterest.textContent = `${Math.abs(account.movements.filter(value => value > 0).map(value => value * account.interestRate / 100).filter(value => value >= 1).reduce((sum, value) => sum + value)).toFixed(2)}€`; //round to 2 decimal
 };
 
 /**
@@ -258,7 +259,7 @@ function closeAccount(event) {
 function requestLoan(event) {
   // Prevent the form default behaviour, when submitting it, for refreshing the page
   event.preventDefault();
-  const amount = Math.floor(inputLoanAmount.value);
+  const amount = Math.floor(inputLoanAmount.value); //round down the value
   // if any of the movement in the current account is greater or equal than the 10%
   // of the requested amount, and the amount is greater than 0
   if (amount > 0 && currentAccount.movements.some(movement => movement >= amount * 0.1)) {
@@ -288,8 +289,6 @@ function updateData() {
   // Display summary
   calcPrintDisplaySummary(currentAccount);
 };
-
-
 
 
 
