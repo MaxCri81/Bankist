@@ -92,10 +92,17 @@ function displayMovements(account, sort = false) {
   containerMovements.innerHTML = "";
   // Display the date in the UI
   displayDate();
-  // slice returns a new array so to avoid changing the original movements array, with the sort method.
-  const sortMovements = sort ? account.movements.slice().sort((a, b) => a - b) : account.movements;
 
-  sortMovements.forEach(createMovementElementSafe);
+  // @returns an object with movement and date (the object need to be wrapped in parenthesis)
+  const combinedMovementsDate = account.movements.map((value, index) => ({
+    movement: value,
+    date: account.movementsDates[index]
+  }));
+
+  // if sort is set to true then sort the movements array in ascending order
+  if (sort) combinedMovementsDate.sort((a, b) => a.movement - b.movement);
+
+  combinedMovementsDate.forEach(createMovementElementSafe);
   // Select every other element and set its background color to WhiteSmoke.
   [...document.querySelectorAll(".movements__row")].forEach((row, index) => index % 2 === 0 ? row.style.backgroundColor = "WhiteSmoke" : null);
   
@@ -121,12 +128,14 @@ function displayMovements(account, sort = false) {
   /**
    * Create an HTML element dynamically from a forEach call back.
    * This approach is safer then the insertAdjacentHTML method.
-   * @param {number} value - forEach array value iteration
+   * @param {Object} object - forEach array object iteration
    * @param {number} index - forEach array index iteration
    */
-  function createMovementElementSafe(value, index) {
+  function createMovementElementSafe(object, index) {
+    // Destructure the object
+    const {movement, date} = object;
     // If the value is positive style and write deposit, otherwise withdrawal
-    const movementType = value > 0 ? "deposit" : "withdrawal";
+    const movementType = movement > 0 ? "deposit" : "withdrawal";
 
     // container (movements__row)
     const row = document.createElement('div');
@@ -144,14 +153,14 @@ function displayMovements(account, sort = false) {
     // movements date
     const movementsDate = document.createElement('div');
     movementsDate.className = 'movements__date';
-    text = document.createTextNode(displayDate(currentAccount.movementsDates[index])); 
+    text = document.createTextNode(displayDate(date)); 
     movementsDate.appendChild(text);
     row.append(movementsDate);
 
     // movements value
     const movementsValue = document.createElement('div');
     movementsValue.className = 'movements__value';
-    text = document.createTextNode(value.toFixed(2) + "€"); //round to 2 decimal
+    text = document.createTextNode(movement.toFixed(2) + "€"); //round to 2 decimal
     movementsValue.appendChild(text);
     row.append(movementsValue);
   }
@@ -181,7 +190,7 @@ function calcPrintBalance(account) {
 };
 
 /**
- * Print the sum of the deposits, withdrawal and total interests of 1.2% 
+ * Print the sum of the deposits, withdrawal and total interests of 1.2% (interestRate)
  * applied on every deposit transaction. Transactions must be greater 
  * or equal to 1€. Show the pipeline results in the app.
  * @param {Object} account - account object to work with.
@@ -234,10 +243,10 @@ function transfer(event) {
   if (amount && currentAccount.balance >= amount && currentAccount.username !== receiverAccount?.username && receiverAccount) {
     // subtract the money from the current account
     currentAccount.movements.push(-amount);
-    currentAccount.movementsDates.push(Date.now()); // add date
+    currentAccount.movementsDates.push(new Date().toISOString()); // add date
     // add the money to the receiver account
     receiverAccount.movements.push(amount);
-    receiverAccount.movementsDates.push(Date.now()); // add date
+    receiverAccount.movementsDates.push(new Date().toISOString()); // add date
     // update UI
     updateData();
   }
@@ -278,7 +287,7 @@ function requestLoan(event) {
   // of the requested amount, and the amount is greater than 0
   if (amount > 0 && currentAccount.movements.some(movement => movement >= amount * 0.1)) {
     currentAccount.movements.push(amount); // add loan movement
-    currentAccount.movementsDates.push(Date.now()); // add date
+    currentAccount.movementsDates.push(new Date().toISOString()); // add date
     updateData();
   }
   inputLoanAmount.value = "";
