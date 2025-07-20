@@ -94,6 +94,7 @@ function displayMovements(account, sort = false) {
   displayDate();
 
   // @returns an object with movement and date (the object need to be wrapped in parenthesis)
+  // this allow movements and dates to be related and displayed correctly even after doing the sorting
   const combinedMovementsDate = account.movements.map((value, index) => ({
     movement: value,
     date: account.movementsDates[index]
