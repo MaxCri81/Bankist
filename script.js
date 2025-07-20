@@ -87,11 +87,13 @@ btnSort.addEventListener("click", sortMovements);
  * @param {Array} movements - array of numbers (user movement figures)
  * @param {boolean} sort - sorting or not the movements true / false, default false 
  */
-function displayMovements(movements, sort = false) {
+function displayMovements(account, sort = false) {
   // Clear all movement elements
   containerMovements.innerHTML = "";
+  // Display the date in the UI
+  displayDate();
   // slice returns a new array so to avoid changing the original movements array, with the sort method.
-  const sortMovements = sort ? movements.slice().sort((a, b) => a - b) : movements;
+  const sortMovements = sort ? account.movements.slice().sort((a, b) => a - b) : account.movements;
 
   sortMovements.forEach(createMovementElementSafe);
   // Select every other element and set its background color to WhiteSmoke.
@@ -126,17 +128,27 @@ function displayMovements(movements, sort = false) {
     // If the value is positive style and write deposit, otherwise withdrawal
     const movementType = value > 0 ? "deposit" : "withdrawal";
 
+    // container (movements__row)
     const row = document.createElement('div');
     row.className = 'movements__row';
     //containerMovements.append(row); // add at the end
     containerMovements.insertBefore(row, containerMovements.firstChild); // insert at the beginning
 
+    // movements type
     const movementsType = document.createElement('div');
     movementsType.classList.add('movements__type', `movements__type--${movementType}`);
     let text = document.createTextNode(index + 1 + " " + movementType);
     movementsType.appendChild(text);
     row.append(movementsType);
 
+    // movements date
+    const movementsDate = document.createElement('div');
+    movementsDate.className = 'movements__date';
+    text = document.createTextNode(displayDate(currentAccount.movementsDates[index])); 
+    movementsDate.appendChild(text);
+    row.append(movementsDate);
+
+    // movements value
     const movementsValue = document.createElement('div');
     movementsValue.className = 'movements__value';
     text = document.createTextNode(value.toFixed(2) + "€"); //round to 2 decimal
@@ -222,8 +234,10 @@ function transfer(event) {
   if (amount && currentAccount.balance >= amount && currentAccount.username !== receiverAccount?.username && receiverAccount) {
     // subtract the money from the current account
     currentAccount.movements.push(-amount);
+    currentAccount.movementsDates.push(Date.now()); // add date
     // add the money to the receiver account
     receiverAccount.movements.push(amount);
+    receiverAccount.movementsDates.push(Date.now()); // add date
     // update UI
     updateData();
   }
@@ -263,7 +277,8 @@ function requestLoan(event) {
   // if any of the movement in the current account is greater or equal than the 10%
   // of the requested amount, and the amount is greater than 0
   if (amount > 0 && currentAccount.movements.some(movement => movement >= amount * 0.1)) {
-    currentAccount.movements.push(amount);
+    currentAccount.movements.push(amount); // add loan movement
+    currentAccount.movementsDates.push(Date.now()); // add date
     updateData();
   }
   inputLoanAmount.value = "";
@@ -276,19 +291,44 @@ function requestLoan(event) {
  * the button is clicked.
  */
 function sortMovements() {
-  displayMovements(currentAccount.movements, !sorted);
+  displayMovements(currentAccount, !sorted);
   sorted = !sorted;
 }
 
 /** Update UI movements, balance and summary related to the user credentials. */
 function updateData() {
   // Display movements
-  displayMovements(currentAccount.movements);
+  displayMovements(currentAccount);
   // Display balance
   calcPrintBalance(currentAccount);
   // Display summary
   calcPrintDisplaySummary(currentAccount);
 };
+
+/** Test mode - log in with account1 and display the UI */
+function testing(){
+  currentAccount = account1;
+  containerApp.style.opacity = 1;
+  updateData();
+};
+testing();
+
+/**
+ * Display the current date on the UI
+ * @param {number} timestamp - timestamp from 1970 to today date in milliseconds
+ * @returns a formatted string to be later displayed along the movements
+ */
+function displayDate(timestamp) {
+  const now = new Date(timestamp);
+  const day = `${now.getDate()}`.padStart(2, 0);
+  const month = `${now.getMonth() + 1}`.padStart(2, 0); // getMonth is in base 0, so we need to add 1
+  const year = now.getFullYear();
+  const hour = now.getHours();
+  const min = now.getMinutes();
+  labelDate.textContent = `${day}/${month}/${year}, ${hour}:${min}`;
+  return `${day}/${month}/${year}`;
+};
+
 
 
 
