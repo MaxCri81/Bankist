@@ -16,8 +16,8 @@ const account1 = {
     '2020-04-01T10:17:24.185Z',
     '2020-05-08T14:11:59.604Z',
     '2020-05-27T17:01:17.194Z',
-    '2020-07-11T23:36:17.929Z',
-    '2020-07-12T10:51:36.790Z',
+    '2025-07-17T23:36:17.929Z',
+    '2025-07-19T10:51:36.790Z',
   ],
   currency: 'EUR',
   locale: 'pt-PT', // de-DE
@@ -153,7 +153,10 @@ function displayMovements(account, sort = false) {
     // movements date
     const movementsDate = document.createElement('div');
     movementsDate.className = 'movements__date';
-    text = document.createTextNode(displayDate(date)); 
+    // check how many days are passed between today and the movement date transaction
+    const dayPassed = calcDdaysPassed(new Date(), new Date(date));
+    // if dayPassed is undefined (for movement date transaction > 7 days) then the date is displayed otherwise a formatted string
+    text = document.createTextNode(typeof dayPassed === "undefined" ? displayDate(date) : calcDdaysPassed(new Date(), new Date(date)));
     movementsDate.appendChild(text);
     row.append(movementsDate);
 
@@ -337,6 +340,23 @@ function displayDate(timestamp) {
   labelDate.textContent = `${day}/${month}/${year}, ${hour}:${min}`;
   return `${day}/${month}/${year}`;
 };
+
+/**
+ * Check how many days are passed between two dates.
+ * @param {Object} date1 - first date object with the current date and time
+ * @param {Object} date2 - second date object with the date and time to compare with
+ * @returns a string for dates within the range of 7 days, otherwise returns undefined
+ */
+function calcDdaysPassed(date1, date2) {
+  const dayPassed = Math.round(Math.abs(date2 - date1) / (24 * 60 * 60 * 1000)); //(day, hours, minutes, milliseconds)
+  if (dayPassed === 0) return "Today";
+  if (dayPassed === 1) return "Yesterday";
+  if (dayPassed <= 7) return `${dayPassed} days ago`;
+  return;
+};
+
+
+
 
 
 
