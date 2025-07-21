@@ -91,7 +91,7 @@ function displayMovements(account, sort = false) {
   // Clear all movement elements
   containerMovements.innerHTML = "";
   // Display the date in the UI
-  displayDateIntl();
+  displayDateIntl(account);
 
   // @returns an object with movement and date (the object need to be wrapped in parenthesis)
   // this allow movements and dates to be related and displayed correctly even after doing the sorting
@@ -157,7 +157,7 @@ function displayMovements(account, sort = false) {
     // check how many days are passed between today and the movement date transaction
     const dayPassed = calcDdaysPassed(new Date(), new Date(date));
     // if dayPassed is undefined (for movement date transaction > 7 days) then the date is displayed otherwise a formatted string
-    text = document.createTextNode(typeof dayPassed === "undefined" ? displayDateIntl(date) : calcDdaysPassed(new Date(), new Date(date)));
+    text = document.createTextNode(typeof dayPassed === "undefined" ? displayDateIntl(account, date) : calcDdaysPassed(new Date(), new Date(date)));
     movementsDate.appendChild(text);
     row.append(movementsDate);
 
@@ -345,9 +345,10 @@ function displayDate(timestamp) {
 /**
  * Display the current date on the UI with the international settings
  * @param {string} stringDate - international standard date
+ * @param {Object} account - current account
  * @returns a formatted string to be later displayed along the movements
  */
-function displayDateIntl(stringDate = Date.now()) {
+function displayDateIntl(account, stringDate = Date.now()) {
   const now = new Date(stringDate);
 
   const options = {
@@ -358,8 +359,8 @@ function displayDateIntl(stringDate = Date.now()) {
     year: "numeric", 
   };
   // Date internationalization
-  labelDate.textContent = new Intl.DateTimeFormat(currentAccount.locale, options).format(Date.now()); // current date
-  return new Intl.DateTimeFormat(currentAccount.locale).format(now); // movement date
+  labelDate.textContent = new Intl.DateTimeFormat(account.locale, options).format(Date.now()); // current date
+  return new Intl.DateTimeFormat(account.locale).format(now); // movement date
 }
 
 /**
