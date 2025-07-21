@@ -4,7 +4,7 @@
 
 // Data
 const account1 = {
-  owner: 'Jonas Schmedtmann',
+  owner: 'Max Crisafulli',
   movements: [200, 455.23, -306.5, 25000, -642.21, -133.9, 79.97, 1300],
   interestRate: 1.2, // %
   pin: 1111,
@@ -20,7 +20,7 @@ const account1 = {
     '2025-07-19T10:51:36.790Z',
   ],
   currency: 'EUR',
-  locale: 'pt-PT', // de-DE
+  locale: 'it-IT', 
 };
 
 const account2 = {
@@ -103,7 +103,11 @@ function displayMovements(account, sort = false) {
   // if sort is set to true then sort the movements array in ascending order
   if (sort) combinedMovementsDate.sort((a, b) => a.movement - b.movement);
 
-  combinedMovementsDate.forEach(createMovementElementSafe);
+  // combinedMovementsDate.forEach(function(value, index) {
+  //   createMovementElementSafe(value, index, account);
+  //  });  // Same as below, left for reference.
+  combinedMovementsDate.forEach((value, index) => createMovementElementSafe(value, index, account));
+
   // Select every other element and set its background color to WhiteSmoke.
   [...document.querySelectorAll(".movements__row")].forEach((row, index) => index % 2 === 0 ? row.style.backgroundColor = "WhiteSmoke" : null);
   
@@ -132,7 +136,7 @@ function displayMovements(account, sort = false) {
    * @param {Object} object - forEach array object iteration
    * @param {number} index - forEach array index iteration
    */
-  function createMovementElementSafe(object, index) {
+  function createMovementElementSafe(object, index, account) {
     // Destructure the object
     const {movement, date} = object;
     // If the value is positive style and write deposit, otherwise withdrawal
@@ -164,11 +168,26 @@ function displayMovements(account, sort = false) {
     // movements value
     const movementsValue = document.createElement('div');
     movementsValue.className = 'movements__value';
-    text = document.createTextNode(movement.toFixed(2) + "€"); //round to 2 decimal
+    // text = document.createTextNode(movement.toFixed(2) + "€"); // round to 2 decimal - amount without internationalization - left for reference
+    text = document.createTextNode(movementIntl(account, movement));
     movementsValue.appendChild(text);
     row.append(movementsValue);
   }
 };
+
+/**
+ * @param {Object} account - current account 
+ * @param {number} movement - movement to be styled
+ * @returns a string with the movement styled with internationalization, 
+ * currency and locale set according to the account object properties
+ */
+function movementIntl(account, movement) {
+  const options = {
+    style: "currency", 
+    currency: account.currency,
+  };
+  return new Intl.NumberFormat(account.locale, options).format(movement);
+}
 
 /**
  * For each account object in accountArray create the userName property with
@@ -190,15 +209,16 @@ createUsername(accounts);
  */
 function calcPrintBalance(account) {
   account.balance = account.movements.reduce((sum, value) => sum + value, 0);
-  labelBalance.textContent = `${account.balance.toFixed(2)}€`; //round to 2 decimal
+  // labelBalance.textContent = `${account.balance.toFixed(2)}€`; // round to 2 decimal
+  labelBalance.textContent = movementIntl(account, account.balance); 
 };
 
 /**
  * Print the sum of the deposits, withdrawal and total interests of 1.2% (interestRate)
  * applied on every deposit transaction. Transactions must be greater 
- * or equal to 1€. Show the pipeline results in the app.
+ * or equal to 1€. Show the pipeline results in the app. Left for reference
  * @param {Object} account - account object to work with.
- */
+ */ /*
 function calcPrintDisplaySummary(account) {
   // Sum of all the deposits (positive values)
   labelSumIn.textContent = `${account.movements.filter(value => value > 0).reduce((sum, value) => sum + value).toFixed(2)}€`; //round to 2 decimal
@@ -206,6 +226,21 @@ function calcPrintDisplaySummary(account) {
   labelSumOut.textContent = `${Math.abs(account.movements.filter(value => value < 0).reduce((sum, value) => sum + value)).toFixed(2)}€`; //round to 2 decimal
   // Sum of the interests of 1.2% applied on every deposit transaction, where the transaction is greater or equal to 1€.
   labelSumInterest.textContent = `${Math.abs(account.movements.filter(value => value > 0).map(value => value * account.interestRate / 100).filter(value => value >= 1).reduce((sum, value) => sum + value)).toFixed(2)}€`; //round to 2 decimal
+};*/
+
+/**
+ * Print the sum of the deposits, withdrawal and total interests of 1.2% (interestRate)
+ * applied on every deposit transaction. Transactions must be greater 
+ * or equal to 1€. Show the pipeline results in the app. Values are internationalized.
+ * @param {Object} account - account object to work with.
+ */
+function calcPrintDisplaySummary(account) {
+  // Sum of all the deposits (positive values)
+  labelSumIn.textContent = movementIntl(account, account.movements.filter(value => value > 0).reduce((sum, value) => sum + value, 0));
+  // Sum of all the withdrawal (negative values)
+  labelSumOut.textContent = movementIntl(account, Math.abs(account.movements.filter(value => value < 0).reduce((sum, value) => sum + value, 0)));
+  // Sum of the interests of 1.2% applied on every deposit transaction, where the transaction is greater or equal to 1€.
+  labelSumInterest.textContent = movementIntl(account, Math.abs(account.movements.filter(value => value > 0).map(value => value * account.interestRate / 100).filter(value => value >= 1).reduce((sum, value) => sum + value, 0)));
 };
 
 /**
@@ -311,7 +346,7 @@ function sortMovements() {
 /** Update UI movements, balance and summary related to the user credentials. */
 function updateData() {
   // Display movements
-  displayMovements(currentAccount);
+   displayMovements(currentAccount);
   // Display balance
   calcPrintBalance(currentAccount);
   // Display summary
@@ -330,7 +365,7 @@ testing();
  * Display the current date on the UI. Not in use, left as a reference.
  * @param {number} timestamp - timestamp from 1970 to today date in milliseconds
  * @returns a formatted string to be later displayed along the movements
- */
+ */ /*
 function displayDate(timestamp) {
   const now = new Date(timestamp);
   const day = `${now.getDate()}`.padStart(2, 0);
@@ -340,7 +375,7 @@ function displayDate(timestamp) {
   const min = now.getMinutes();
   labelDate.textContent = `${day}/${month}/${year}, ${hour}:${min}`;
   return `${day}/${month}/${year}`;
-};
+}; */
 
 /**
  * Display the current date on the UI with the international settings
@@ -350,7 +385,6 @@ function displayDate(timestamp) {
  */
 function displayDateIntl(account, stringDate = Date.now()) {
   const now = new Date(stringDate);
-
   const options = {
     hour: "numeric",
     minute: "numeric",
