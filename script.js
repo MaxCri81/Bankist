@@ -91,7 +91,7 @@ function displayMovements(account, sort = false) {
   // Clear all movement elements
   containerMovements.innerHTML = "";
   // Display the date in the UI
-  displayDate();
+  displayDateIntl();
 
   // @returns an object with movement and date (the object need to be wrapped in parenthesis)
   // this allow movements and dates to be related and displayed correctly even after doing the sorting
@@ -108,7 +108,7 @@ function displayMovements(account, sort = false) {
   [...document.querySelectorAll(".movements__row")].forEach((row, index) => index % 2 === 0 ? row.style.backgroundColor = "WhiteSmoke" : null);
   
   /**
-   * Create an HTML element dynamically from a forEach call back.
+   * Create an HTML element dynamically from a forEach call back. Not in use, left as a reference.
    * This approach can pose a risk of Cross-Site Scripting (XSS) attacks 
    * if the HTML content comes from untrusted sources, such as user input or external data.
    * @param {number} value - forEach array value iteration
@@ -157,7 +157,7 @@ function displayMovements(account, sort = false) {
     // check how many days are passed between today and the movement date transaction
     const dayPassed = calcDdaysPassed(new Date(), new Date(date));
     // if dayPassed is undefined (for movement date transaction > 7 days) then the date is displayed otherwise a formatted string
-    text = document.createTextNode(typeof dayPassed === "undefined" ? displayDate(date) : calcDdaysPassed(new Date(), new Date(date)));
+    text = document.createTextNode(typeof dayPassed === "undefined" ? displayDateIntl(date) : calcDdaysPassed(new Date(), new Date(date)));
     movementsDate.appendChild(text);
     row.append(movementsDate);
 
@@ -327,7 +327,7 @@ function testing(){
 testing();
 
 /**
- * Display the current date on the UI
+ * Display the current date on the UI. Not in use, left as a reference.
  * @param {number} timestamp - timestamp from 1970 to today date in milliseconds
  * @returns a formatted string to be later displayed along the movements
  */
@@ -341,6 +341,26 @@ function displayDate(timestamp) {
   labelDate.textContent = `${day}/${month}/${year}, ${hour}:${min}`;
   return `${day}/${month}/${year}`;
 };
+
+/**
+ * Display the current date on the UI with the international settings
+ * @param {string} stringDate - international standard date
+ * @returns a formatted string to be later displayed along the movements
+ */
+function displayDateIntl(stringDate = Date.now()) {
+  const now = new Date(stringDate);
+
+  const options = {
+    hour: "numeric",
+    minute: "numeric",
+    day: "numeric",
+    month: "numeric", 
+    year: "numeric", 
+  };
+  // Date internationalization
+  labelDate.textContent = new Intl.DateTimeFormat(currentAccount.locale, options).format(Date.now()); // current date
+  return new Intl.DateTimeFormat(currentAccount.locale).format(now); // movement date
+}
 
 /**
  * Check how many days are passed between two dates.
