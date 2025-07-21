@@ -114,10 +114,10 @@ function displayMovements(account, sort = false) {
   /**
    * Create an HTML element dynamically from a forEach call back. Not in use, left as a reference.
    * This approach can pose a risk of Cross-Site Scripting (XSS) attacks 
-   * if the HTML content comes from untrusted sources, such as user input or external data.
+   * if the HTML content comes from untrusted sources, such as user input or external data. Left for reference
    * @param {number} value - forEach array value iteration
    * @param {number} index - forEach array index iteration
-   */
+   */ /*
   function createMovementElement(value, index) {
     // If the value is positive style and write deposit, otherwise withdrawal
     const movementType = value > 0 ? "deposit" : "withdrawal";
@@ -128,7 +128,7 @@ function displayMovements(account, sort = false) {
         </div>
     `;
     containerMovements.insertAdjacentHTML("afterbegin", htmlElement);
-  }
+  };*/
 
   /**
    * Create an HTML element dynamically from a forEach call back.
@@ -172,7 +172,7 @@ function displayMovements(account, sort = false) {
     text = document.createTextNode(movementIntl(account, movement));
     movementsValue.appendChild(text);
     row.append(movementsValue);
-  }
+  };
 };
 
 /**
@@ -187,7 +187,7 @@ function movementIntl(account, movement) {
     currency: account.currency,
   };
   return new Intl.NumberFormat(account.locale, options).format(movement);
-}
+};
 
 /**
  * For each account object in accountArray create the userName property with
@@ -288,7 +288,7 @@ function transfer(event) {
     receiverAccount.movementsDates.push(new Date().toISOString()); // add date
     // update UI
     updateData();
-  }
+  };
   // clear the input fields
   inputTransferAmount.value = inputTransferTo.value = "";
 };
@@ -308,10 +308,10 @@ function closeAccount(event) {
     accounts.splice(index, 1);
     // Hide UI
     containerApp.style.opacity = 0;
-  }
+  };
   // Clear input fields
   inputCloseUsername.value = inputClosePin.value = "";
-}
+};
 
 /**
  * Add a new deposit in the movements array for the current account.
@@ -328,9 +328,9 @@ function requestLoan(event) {
     currentAccount.movements.push(amount); // add loan movement
     currentAccount.movementsDates.push(new Date().toISOString()); // add date
     updateData();
-  }
+  };
   inputLoanAmount.value = "";
-}
+};
 
 /**
  * Call back function from btnSort click event.
@@ -341,7 +341,7 @@ function requestLoan(event) {
 function sortMovements() {
   displayMovements(currentAccount, !sorted);
   sorted = !sorted;
-}
+};
 
 /** Update UI movements, balance and summary related to the user credentials. */
 function updateData() {
@@ -395,7 +395,7 @@ function displayDateIntl(account, stringDate = Date.now()) {
   // Date internationalization
   labelDate.textContent = new Intl.DateTimeFormat(account.locale, options).format(Date.now()); // current date
   return new Intl.DateTimeFormat(account.locale).format(now); // movement date
-}
+};
 
 /**
  * Check how many days are passed between two dates.
