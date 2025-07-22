@@ -44,7 +44,9 @@ const account2 = {
 };
 
 const accounts = [account1, account2];
-let currentAccount;
+let currentAccount; // To keep track of the current account
+let sorted; // To keep track of the movements sorting order
+let timerTimeoutId; // To keep track of the ongoing timeout
 
 // Elements
 const labelWelcome = document.querySelector('.welcome');
@@ -71,8 +73,6 @@ const inputTransferAmount = document.querySelector('.form__input--amount');
 const inputLoanAmount = document.querySelector('.form__input--loan-amount');
 const inputCloseUsername = document.querySelector('.form__input--user');
 const inputClosePin = document.querySelector('.form__input--pin');
-
-let sorted = false;
 
 // Event handler
 btnLogin.addEventListener("click", login);
@@ -264,7 +264,42 @@ function login(event) {
     labelWelcome.textContent = `Welcome back, ${currentAccount.owner.split(" ")[0]}`;
     containerApp.style.opacity = 1;
     updateData();
+   };
+};
+
+/**
+ * Clear any existing timeout and call logOutTimerRecursive
+ * @param {number} initialSeconds - seconds to pass to the recursive function
+ */
+function startLogoutTimer(initialSeconds) {
+  // Clear any existing timeout
+  if (timerTimeoutId) {
+    clearTimeout(timerTimeoutId);
   };
+
+  /**
+   * Display a logout timer on the UI and log out the user when the countdown ends.
+   * @param {number} seconds - seconds for setting the timeout
+   * @returns 'undefined'
+   */
+  function logOutTimerRecursive(seconds) {
+    const min = `${Math.floor(seconds / 60)}`.padStart(2, '0');
+    const sec = `${seconds % 60}`.padStart(2, '0');
+    // Print the remaining time to the UI
+    labelTimer.textContent = `${min}:${sec}`;
+    // When 0 is reached, stop timer and log out the user
+    if (seconds === 0) {
+      // Update the UI and message
+      labelWelcome.textContent = `Log in to get started`;
+      // Make the UI invisible
+      containerApp.style.opacity = 0;
+      return;
+    } else {
+      // Save timeout ID
+      timerTimeoutId = setTimeout(() => logOutTimerRecursive(seconds - 1), 1000);
+    };
+  };
+  logOutTimerRecursive(initialSeconds); // Start the timer
 };
 
 /**
@@ -325,9 +360,12 @@ function requestLoan(event) {
   // if any of the movement in the current account is greater or equal than the 10%
   // of the requested amount, and the amount is greater than 0
   if (amount > 0 && currentAccount.movements.some(movement => movement >= amount * 0.1)) {
-    currentAccount.movements.push(amount); // add loan movement
-    currentAccount.movementsDates.push(new Date().toISOString()); // add date
-    updateData();
+    // timer function 2500ms
+    setTimeout(function() {
+      currentAccount.movements.push(amount); // add loan movement
+      currentAccount.movementsDates.push(new Date().toISOString()); // add date
+      updateData();
+    }, 2500);
   };
   inputLoanAmount.value = "";
 };
@@ -351,6 +389,8 @@ function updateData() {
   calcPrintBalance(currentAccount);
   // Display summary
   calcPrintDisplaySummary(currentAccount);
+  // Reset timer
+  startLogoutTimer(5*60); // 5 minutes
 };
 
 /** Test mode - log in with account1 and display the UI */
@@ -359,7 +399,7 @@ function testing(){
   containerApp.style.opacity = 1;
   updateData();
 };
-testing();
+//testing();
 
 /**
  * Display the current date on the UI. Not in use, left as a reference.
@@ -410,6 +450,10 @@ function calcDdaysPassed(date1, date2) {
   if (dayPassed <= 7) return `${dayPassed} days ago`;
   return;
 };
+
+
+
+
 
 
 
