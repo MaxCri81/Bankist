@@ -341,6 +341,8 @@ function closeAccount(event) {
     const index = accounts.findIndex(account => account.username === currentAccount.username);
     // delete the object
     accounts.splice(index, 1);
+    // Update message
+    labelWelcome.textContent = `Log in to get started`;
     // Hide UI
     containerApp.style.opacity = 0;
   };
