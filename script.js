@@ -106,7 +106,8 @@ function displayMovements(account, sort = false) {
   // combinedMovementsDate.forEach(function(value, index) {
   //   createMovementElementSafe(value, index, account);
   //  });  // Same as below, left for reference.
-  combinedMovementsDate.forEach((value, index) => createMovementElementSafe(value, index, account));
+  // combinedMovementsDate.forEach((value, index) => createMovementElementSafe(value, index, account));
+  combinedMovementsDate.forEach(createMovementElementSafe.bind(account));
 
   // Select every other element and set its background color to WhiteSmoke.
   [...document.querySelectorAll(".movements__row")].forEach((row, index) => index % 2 === 0 ? row.style.backgroundColor = "WhiteSmoke" : null);
@@ -133,10 +134,11 @@ function displayMovements(account, sort = false) {
   /**
    * Create an HTML element dynamically from a forEach call back.
    * This approach is safer then the insertAdjacentHTML method.
+   * The 'this' is binded to the current account, see displayMovements. 
    * @param {Object} object - forEach array object iteration
    * @param {number} index - forEach array index iteration
    */
-  function createMovementElementSafe(object, index, account) {
+  function createMovementElementSafe(object, index) {
     // Destructure the object
     const {movement, date} = object;
     // If the value is positive style and write deposit, otherwise withdrawal
@@ -161,7 +163,7 @@ function displayMovements(account, sort = false) {
     // check how many days are passed between today and the movement date transaction
     const dayPassed = calcDdaysPassed(new Date(), new Date(date));
     // if dayPassed is undefined (for movement date transaction > 7 days) then the date is displayed otherwise a formatted string
-    text = document.createTextNode(typeof dayPassed === "undefined" ? displayDateIntl(account, date) : calcDdaysPassed(new Date(), new Date(date)));
+    text = document.createTextNode(typeof dayPassed === "undefined" ? displayDateIntl(this, date) : calcDdaysPassed(new Date(), new Date(date)));
     movementsDate.appendChild(text);
     row.append(movementsDate);
 
@@ -169,7 +171,7 @@ function displayMovements(account, sort = false) {
     const movementsValue = document.createElement('div');
     movementsValue.className = 'movements__value';
     // text = document.createTextNode(movement.toFixed(2) + "€"); // round to 2 decimal - amount without internationalization - left for reference
-    text = document.createTextNode(movementIntl(account, movement));
+    text = document.createTextNode(movementIntl(this, movement));
     movementsValue.appendChild(text);
     row.append(movementsValue);
   };
